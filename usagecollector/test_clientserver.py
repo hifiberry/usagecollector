@@ -7,8 +7,8 @@ import unittest
 import tempfile
 import os
 
-from stats.client import StatsClient
-from stats.server import StatsWebserver
+from usagecollector.client import StatsClient
+from usagecollector.server import StatsWebserver
 
 class TestClientServer(unittest.TestCase):
 
@@ -55,6 +55,19 @@ class TestClientServer(unittest.TestCase):
         client.restore()
         keys = client.keys()
         self.assertSetEqual(set(keys), set(["test1","test2","test3"]))
+        
+        # test JSON export
+        client.clear()
+        empty = client.dump()
+        self.assertEqual({}, empty)
+        client.restore()
+        db = client.dump()
+        print(db)
+        self.assertTrue("test1" in db)
+        self.assertTrue("test2" in db)
+        self.assertTrue("test3" in db)
+    
+
         
         os.remove(filename)
 
