@@ -56,6 +56,10 @@ class StatsClient():
         data = self.api_get(["keys"])
         return data
     
+    def dump(self):
+        data = self.api_get(["dump"])
+        return data
+    
     def url(self, args):
         return self.baseUrl + "/".join(args)
 
