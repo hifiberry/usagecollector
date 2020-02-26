@@ -50,7 +50,7 @@ import sys
 
 from bottle import Bottle, response
 
-from stats.db import StatsDB
+from usagecollector.db import StatsDB
 
 class StatsWebserver():
 
@@ -99,11 +99,13 @@ class StatsWebserver():
         self.bottle.route('/api/keys',
                           method="GET",
                           callback=self.keys_handler)
+        self.bottle.route('/api/dump',
+                          method="GET",
+                          callback=self.dump_handler)
 
     def startServer(self):
         self.bottle.run(port=self.port,
-                        host=self.host,
-                        debug=self.debug)
+                        host=self.host)
 
     def activate_handler(self, key, activate = True):
         record = self.db.get(key, create=True)
@@ -142,6 +144,12 @@ class StatsWebserver():
     def restore_handler(self):
         self.db.readFile(self.dbfile)
         return "ok"
+    
+    def dump_handler(self):
+        self.db.writeFile(self.dbfile)
+        response.headers['Content-Type'] = 'application/json'
+        json_str = self.db.asJson()
+        return json_str
     
     # ##
     # ## end URL handlers
