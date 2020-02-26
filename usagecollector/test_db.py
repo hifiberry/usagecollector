@@ -6,7 +6,7 @@ Created on 26.02.2020
 import unittest
 import tempfile
 
-from stats.db import DBEntry, StatsDB
+from usagecollector.db import DBEntry, StatsDB
 
 class DBEntryTest(unittest.TestCase):
 
