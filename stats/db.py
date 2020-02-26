@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
+from json import dumps, loads
+
 class DBEntry(object):
     
     def __init__(self, initial_data={}):
@@ -32,12 +34,11 @@ class DBEntry(object):
         if counter > 0:
             self.used = self.used + counter
         
-        
     def activate(self, active = True):
         if self.active != active:
             self.active = active
             self.changed += 1
-        
+            
         
 class StatsDB(object):
 
@@ -60,6 +61,37 @@ class StatsDB(object):
         
     def keys(self):
         return self.mem_db.keys()
+    
+    def clear(self):
+        self.mem_db.clear()
         
     def __len__(self):
         return len(self.mem_db)
+    
+    def asJson(self):
+        # convert objects to dicts first
+        json_dict = {}
+        for key in self.mem_db.keys():
+            json_dict[key]=self.mem_db.get(key).__dict__
+            
+        return dumps(json_dict)
+            
+    def fromJson(self, json_str):
+        memdb={}
+        
+        stats = loads(json_str)
+        for key in stats:
+            data = stats[key]
+            dbe = DBEntry(data)
+            memdb[key] = dbe
+        
+        self.mem_db = memdb
+        
+    def writeFile(self,filename):
+        with open(filename, "w") as datafile:  
+            datafile.write(self.asJson())
+        
+    def readFile(self, filename):
+        with open(filename, "r") as datafile:
+            json_str = datafile.read()
+            self.fromJson(json_str)

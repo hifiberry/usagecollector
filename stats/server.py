@@ -45,6 +45,8 @@ SOFTWARE.
 import logging
 import threading
 import json
+import os 
+
 from bottle import Bottle, response
 
 from stats.db import StatsDB, DBEntry
@@ -54,7 +56,9 @@ class StatsWebserver():
     def __init__(self,
                  host='0.0.0.0',
                  port=3141,
-                 debug=False):
+                 debug=False,
+                 dbfile="/var/lib/hifiberry/usage.json",
+                 load_data=True):
         super().__init__()
         self.port = port
         self.host = host
@@ -62,8 +66,15 @@ class StatsWebserver():
         self.bottle = Bottle()
         self.route()
         self.db = StatsDB()
-
-
+        self.dbfile = dbfile
+        
+        if load_data and os.path.isfile(dbfile):
+            try:
+                self.db.readFile(dbfile)
+            except Exception as e:
+                logging.error("can't read %s (%s)",
+                              dbfile, e)
+        
     def route(self):
         self.bottle.route('/api/activate/<key>',
                           method="POST",
@@ -78,8 +89,14 @@ class StatsWebserver():
                           method="GET",
                           callback=self.record_handler)
         self.bottle.route('/api/clear',
-                          method="GET",
+                          method="POST",
                           callback=self.clear_handler)
+        self.bottle.route('/api/store',
+                          method="POST",
+                          callback=self.store_handler)
+        self.bottle.route('/api/restore',
+                          method="POST",
+                          callback=self.restore_handler)
         self.bottle.route('/api/keys',
                           method="GET",
                           callback=self.keys_handler)
@@ -103,7 +120,6 @@ class StatsWebserver():
         record.use(duration)
         return "ok"
 
-
     def record_handler(self,key):
         record = self.db.get(key, create=True)
         response.headers['Content-Type'] = 'application/json'
@@ -119,7 +135,15 @@ class StatsWebserver():
     def clear_handler(self):
         self.db.clear()
         return "ok"
+    
+    def store_handler(self):
+        self.db.writeFile(self.dbfile)
+        return "ok"
   
+    def restore_handler(self):
+        self.db.readFile(self.dbfile)
+        return "ok"
+    
     # ##
     # ## end URL handlers
     # ##

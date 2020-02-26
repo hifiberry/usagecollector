@@ -4,6 +4,7 @@ Created on 26.02.2020
 @author: matuschd
 '''
 import unittest
+import tempfile
 
 from stats.db import DBEntry, StatsDB
 
@@ -55,12 +56,49 @@ class DBEntryTest(unittest.TestCase):
         
 class StatsDBTest(unittest.TestCase):
     
+    def create_test_data(self):
+        db = StatsDB()
+        db.get("test1").use(1)
+        db.get("test2").use(2)
+        db.get("test3").use(3)
+        return db
+        
+    
     def testDBRecords(self):
         db = StatsDB()
         self.assertIsNotNone(db.get("test1"))
         self.assertIsNotNone(db.get("test2"))
         self.assertIsNone(db.get("test3",create=False))
         self.assertEqual(len(db), 2)
+        
+    def testDump(self):
+        db1 = self.create_test_data()
+        
+        json = db1.asJson()
+        
+        db2 = StatsDB()
+        db2.fromJson(json)
+        
+        self.assertEqual(len(db2), len(db1))
+        self.assertSetEqual(set(db1.keys()), set(db2.keys()))
+        self.assertEqual(db2.get("test3").used, 3)
+        
+    def testFileBackup(self):
+        db1 = self.create_test_data()
+        filename = tempfile.gettempdir()+"/8921678923678216782178167818186712216789216789.json"
+        
+        db1.writeFile(filename)
+        
+        db2 = StatsDB()
+        self.assertEqual(len(db2), 0)
+        self.assertEqual(db2.get("test3").used, 0)
+        
+        db2.readFile(filename)
+        
+        self.assertEqual(len(db2), len(db1))
+        self.assertSetEqual(set(db1.keys()), set(db2.keys()))
+        self.assertEqual(db2.get("test3").used, 3)
+        
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

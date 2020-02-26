@@ -39,6 +39,15 @@ class StatsClient():
     def usage(self, key, duration):
         return self.api_post(["use",key,duration])
     
+    def clear(self):
+        return self.api_post(["clear"])
+
+    def store(self):
+        return self.api_post(["store"])
+
+    def restore(self):
+        return self.api_post(["restore"])
+    
     def get_data(self, key):
         data = self.api_get(["record",key])
         return data
