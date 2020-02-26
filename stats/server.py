@@ -46,23 +46,22 @@ import logging
 import threading
 import json
 import os 
+import sys
 
 from bottle import Bottle, response
 
-from stats.db import StatsDB, DBEntry
+from stats.db import StatsDB
 
 class StatsWebserver():
 
     def __init__(self,
                  host='0.0.0.0',
                  port=3141,
-                 debug=False,
                  dbfile="/var/lib/hifiberry/usage.json",
                  load_data=True):
         super().__init__()
         self.port = port
         self.host = host
-        self.debug = debug
         self.bottle = Bottle()
         self.route()
         self.db = StatsDB()
@@ -152,7 +151,7 @@ class StatsWebserver():
     # ##  thread methods
     # ##
 
-    def start(self):
+    def start(self, daemon = True):
         self.thread = threading.Thread(target=self.startServer, args=())
         self.thread.daemon = True
         self.thread.start()
@@ -173,4 +172,21 @@ class StatsWebserver():
 
 
 if __name__ == '__main__':
-    pass
+    
+    if len(sys.argv) > 1:
+        if "-v" in sys.argv:
+            logging.basicConfig(format='%(levelname)s: %(module)s - %(message)s',
+                                level=logging.DEBUG)
+            logging.debug("enabled verbose logging")
+    else:
+        logging.basicConfig(format='%(levelname)s: %(module)s - %(message)s',
+                            level=logging.DEBUG)
+
+    statsServer=StatsWebserver(
+        host='0.0.0.0',
+        port=3141,
+        debug=False,
+        dbfile="/var/lib/hifiberry/usage.json",
+        load_data=True)
+    
+    statsServer.start(daemon=False)
