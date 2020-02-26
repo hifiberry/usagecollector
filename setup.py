@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-import stats
+import usagecollector
 
 setup(name='usagecollector',
-      version=stats.__version__,
+      version=usagecollector.__version__,
       description='Usage data collector',
       long_description='A collection of tools to collect and read usage data', 
       url='http://github.com/hifiberry/usagecollector',
