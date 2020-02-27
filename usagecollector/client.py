@@ -45,7 +45,7 @@ def report_deactivate(key):
 
 def report_usage(key, duration):
     try:
-        return client().api_post(["use",key,duration])
+        return client().api_post(["use",key,str(duration)])
     except:
         return False
 
