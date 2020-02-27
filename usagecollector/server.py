@@ -33,7 +33,7 @@ from usagecollector.db import StatsDB
 
 stopped = False
 statsServer = None
-store_interval = 60*60*12 # automatically store data every 12 hours
+store_interval = 10000 # automatically store data every 10000 seconds
 
 
 class DataSaver(threading.Thread):
