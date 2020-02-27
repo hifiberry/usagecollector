@@ -37,13 +37,13 @@ def report_activate(key):
     except: 
         return False
 
-def report_deactivate(self, key):
+def report_deactivate(key):
     try:
         return client().api_post(["deactivate",key])
     except:
         return False
 
-def report_usage(self, key, duration):
+def report_usage(key, duration):
     try:
         return client().api_post(["use",key,duration])
     except:
