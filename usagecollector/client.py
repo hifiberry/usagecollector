@@ -32,13 +32,22 @@ def client():
     return my_client
         
 def report_activate(key):
-    return client().api_post(["activate",key])
+    try:
+        return client().api_post(["activate",key])
+    except: 
+        return False
 
 def report_deactivate(self, key):
-    return client().api_post(["deactivate",key])
+    try:
+        return client().api_post(["deactivate",key])
+    except:
+        return False
 
 def report_usage(self, key, duration):
-    return client().api_post(["use",key,duration])
+    try:
+        return client().api_post(["use",key,duration])
+    except:
+        return False
 
 
 class StatsClient():
