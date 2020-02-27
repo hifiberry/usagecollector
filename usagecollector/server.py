@@ -123,7 +123,7 @@ class StatsWebserver():
 
     def usage_handler(self, key, duration):
         record = self.db.get(key, create=True)
-        duration = int(duration)
+        duration = float(duration)
         record.use(duration)
         return "ok"
 

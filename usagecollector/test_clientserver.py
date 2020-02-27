@@ -49,6 +49,14 @@ class TestClientServer(unittest.TestCase):
         self.assertEqual(len(keys),3)
         self.assertSetEqual(set(keys), set(["test1","test2","test3"]))
         
+        # Test duration
+        client.usage("test1", 1)
+        record = client.get_data("test1")
+        self.assertEqual(record["used"], 1)
+        client.usage("test1", 2.5)
+        record = client.get_data("test1")
+        self.assertEqual(record["used"], 3.5)
+        
         # test store/clear/restore
         client.store()
         client.clear()

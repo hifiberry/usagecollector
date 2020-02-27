@@ -64,7 +64,7 @@ class StatsClient():
         return self.api_post(["deactivate",key])
     
     def usage(self, key, duration):
-        return self.api_post(["use",key,duration])
+        return self.api_post(["use",key,str(duration)])
     
     def clear(self):
         return self.api_post(["clear"])
