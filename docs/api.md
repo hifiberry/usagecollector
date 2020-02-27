@@ -44,3 +44,49 @@ Retrives all keys
 ### GET /api/dump
 
 Gets the whole database
+
+## Example
+
+```
+curl http://127.0.0.1:3141/api/dump
+{}
+curl -X POST http://127.0.0.1:3141/api/activate/test
+ok
+
+curl -X GET http://127.0.0.1:3141/api/record/test
+{"used": 0.0, "active": true, "changed": 1}
+
+curl -X POST http://127.0.0.1:3141/api/activate/test
+ok
+
+curl -X GET http://127.0.0.1:3141/api/record/test
+{"used": 0.0, "active": true, "changed": 1}
+
+curl -X POST http://127.0.0.1:3141/api/deactivate/test
+ok
+
+curl -X GET http://127.0.0.1:3141/api/record/test
+{"used": 0.0, "active": false, "changed": 2}
+
+curl -X POST http://127.0.0.1:3141/api/use/test/12
+ok
+
+curl -X GET http://127.0.0.1:3141/api/record/test
+{"used": 12.0, "active": false, "changed": 2}
+
+curl -X POST http://127.0.0.1:3141/api/use/test/1 
+ok
+
+curl -X GET http://127.0.0.1:3141/api/record/test
+{"used": 13.0, "active": false, "changed": 2}
+
+curl -X POST http://127.0.0.1:3141/api/clear
+ok
+
+curl -X GET http://127.0.0.1:3141/api/record/test
+{"used": 0.0, "active": false, "changed": 0}
+
+curl -X GET http://127.0.0.1:3141/api/dump
+{"test": {"used": 0.0, "active": 0, "changed": 0}}
+
+```
