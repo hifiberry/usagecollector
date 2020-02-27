@@ -23,6 +23,24 @@ SOFTWARE.
 import requests
 import logging
 
+my_client = None
+
+def client():
+    global my_client
+    if my_client is None:
+        my_client = StatsClient()
+    return my_client
+        
+def report_activate(key):
+    return client().api_post(["activate",key])
+
+def report_deactivate(self, key):
+    return client().api_post(["deactivate",key])
+
+def report_usage(self, key, duration):
+    return client().api_post(["use",key,duration])
+
+
 class StatsClient():
     
     def __init__(self, host="127.0.0.1", port=3141):
