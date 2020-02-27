@@ -47,6 +47,7 @@ import threading
 import json
 import os 
 import sys
+import time
 
 from bottle import Bottle, response
 
@@ -170,6 +171,9 @@ class StatsWebserver():
             return True
         else:
             return self.thread.is_alive()
+    
+    def store_data(self):
+        self.db.writeFile(self.dbfile)
 
     # ##
     # ## end thread methods
@@ -193,8 +197,19 @@ if __name__ == '__main__':
     statsServer=StatsWebserver(
         host='0.0.0.0',
         port=3141,
-        debug=False,
         dbfile="/var/lib/hifiberry/usage.json",
         load_data=True)
     
     statsServer.start(daemon=False)
+    
+    stopped = False
+    while statsServer.is_alive() and not(stopped):
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            stopped = True
+            
+    logging.info("server stopped, saving database...")
+    statsServer.store_data()
+    
+    logging.info("exiting...")
