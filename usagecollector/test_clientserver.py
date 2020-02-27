@@ -6,15 +6,20 @@ Created on 26.02.2020
 import unittest
 import tempfile
 import os
+import time
+import threading
 
 from usagecollector.client import StatsClient
-from usagecollector.server import StatsWebserver
+from usagecollector.server import StatsWebserver, DataSaver
+
+import usagecollector.server
 
 class TestClientServer(unittest.TestCase):
 
     def testClientServer(self):
         
         filename = tempfile.gettempdir()+"/89216789236faadssdawq12216789216789.json"
+        print("test database file: ",filename)
         
         server = StatsWebserver("127.0.0.1",31415, 
                                 load_data=False, 
@@ -62,13 +67,28 @@ class TestClientServer(unittest.TestCase):
         self.assertEqual({}, empty)
         client.restore()
         db = client.dump()
-        print(db)
         self.assertTrue("test1" in db)
         self.assertTrue("test2" in db)
         self.assertTrue("test3" in db)
-    
-
         
+        # Test automatic save
+        client.restore()
+        keys=client.keys()
+        self.assertEqual(len(keys),3)
+        client.clear()
+        time.sleep(3)
+        client.restore()
+        self.assertEqual(len(keys),3)
+        statsSaver = DataSaver(server, interval=1)
+        statsSaver.start()
+        client.clear()
+        time.sleep(3)
+        # statsServer should now save the empty database
+        client.restore()
+        keys=client.keys()
+        self.assertEqual(len(keys),0)
+        statsSaver.stop()
+
         os.remove(filename)
 
 

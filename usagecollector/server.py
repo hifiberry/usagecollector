@@ -19,6 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+from tensorflow_core.compiler.tf2xla.python.xla import self_adjoint_eig
 
 '''
 Copyright (c) 2019 Modul 9/HiFiBerry
@@ -54,7 +55,32 @@ from bottle import Bottle, response
 from usagecollector.db import StatsDB
 
 stopped = False
+statsServer = None
+store_interval = 60*60*12 # automatically store data every 12 hours
 
+
+class DataSaver(threading.Thread):
+    
+    def __init__( self, statsServer, interval=store_interval):
+        super().__init__()
+        self.statsServer = statsServer
+        self.store_interval = interval
+        self.stopped = False
+
+    def run(self):
+        i=0
+        while not(self.stopped) and self.statsServer is not None:
+            time.sleep(1)
+            if i >= self.store_interval:
+                logging.info("storing stats db")
+                self.statsServer.store_data()
+                i=0
+            i += 1
+            
+    def stop(self):
+        self.stopped=True
+            
+    
 class StatsWebserver():
 
     def __init__(self,
@@ -149,7 +175,6 @@ class StatsWebserver():
         return "ok"
     
     def dump_handler(self):
-        self.db.writeFile(self.dbfile)
         response.headers['Content-Type'] = 'application/json'
         json_str = self.db.asJson()
         return json_str
@@ -208,6 +233,9 @@ if __name__ == '__main__':
         load_data=True)
     
     statsServer.start(daemon=False)
+    
+    statsSaver = DataSaver(statsServer)
+    statsSaver.start()
     
     while statsServer.is_alive() and not(stopped):
         try:
