@@ -26,6 +26,7 @@ import json
 import os 
 import sys
 import time
+import signal
 
 from bottle import Bottle, response
 
@@ -194,6 +195,8 @@ def sigterm_handler(_signo, _stack_frame):
 
 if __name__ == '__main__':
     
+    signal.signal(signal.SIGTERM, sigterm_handler)
+    
     if len(sys.argv) > 1:
         if "-v" in sys.argv:
             logging.basicConfig(format='%(levelname)s: %(module)s - %(message)s',
@@ -219,6 +222,8 @@ if __name__ == '__main__':
             time.sleep(1)
         except KeyboardInterrupt:
             stopped = True
+            
+    statsSaver.stop()
             
     logging.info("server stopped, saving database...")
     statsServer.store_data()
