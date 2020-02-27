@@ -53,6 +53,8 @@ from bottle import Bottle, response
 
 from usagecollector.db import StatsDB
 
+stopped = False
+
 class StatsWebserver():
 
     def __init__(self,
@@ -183,6 +185,11 @@ class StatsWebserver():
         return "statsserver@{}".format(self.port)
 
 
+def sigterm_handler(_signo, _stack_frame):
+    global stopped
+    logging.info("received SIGTERM, stopping...")
+    stopped = True
+
 if __name__ == '__main__':
     
     if len(sys.argv) > 1:
@@ -202,7 +209,6 @@ if __name__ == '__main__':
     
     statsServer.start(daemon=False)
     
-    stopped = False
     while statsServer.is_alive() and not(stopped):
         try:
             time.sleep(1)
