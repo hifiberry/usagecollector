@@ -1,14 +1,14 @@
 # Usage collector API
 
-### POST /api/activate/<key>
+### POST /api/activate/\<key\>
 
 Track an "activate" event for a given key
 
-### POST /api/deactivate/<key>
+### POST /api/deactivate/\<key\>
 
 Track a "deactivate" event for a given key
 
-### POST /api/use/<key>/<duration>
+### POST /api/use/\<key\>/\<duration\>
 
 Track a "usage" fr a given key. Duration values will just be summed up. 
 There is no defined semantics for duration. It only has to be a non-negative number. 
@@ -33,7 +33,7 @@ database to disk. There is no need to use the API in this case.
 Restores the database from disk. Settings in memory will be lost. There is usually no need at 
 all to use this. 
 
-### GET /api/record/<key>
+### GET /api/record/\<key\>
 
 Retrieves data for a given key
 
