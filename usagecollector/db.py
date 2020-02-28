@@ -26,18 +26,57 @@ class DBEntry(object):
     
     def __init__(self, initial_data={}):
      
-        self.used = float(initial_data.get("used",0))
-        self.active = initial_data.get("active",0)
-        self.changed = int(initial_data.get("changed",0))
+        # Do not initialize all parameters, we might not need them all
+        # these will be created on demand
+        if "used" in initial_data:
+            self.used = float(initial_data["used"])
+            
+            
+        if "active" in initial_data:
+            self.active = initial_data["active"]
+            
+        if "changed" in initial_data:
+            self.changed = initial_data["changed"]
+        
+        if "activated" in initial_data:
+            self.activated = initial_data["activated"]
+
+        if "deactivated" in initial_data:
+            self.deactivated = initial_data["deactivated"]
         
     def use(self, counter):
         if counter > 0:
-            self.used = self.used + counter
+            try:
+                self.used = self.used + counter
+            except:
+                self.used = counter
+
         
     def activate(self, active = True):
-        if self.active != active:
+        try:
+            if self.active != active:
+                self.active = active
+                self.changed += 1
+        except:
             self.active = active
-            self.changed += 1
+            self.changed = 1
+        
+        if active:
+            try:
+                self.activated = self.activated + 1
+            except:
+                self.activated = 1
+        else:
+            try:
+                self.deactivated = self.deactivated + 1
+            except:
+                self.deactivated = 1
+                
+                
+    def get(self, attribute, default_value=0):
+        return self.__dict__.get(attribute, default_value)
+
+        
             
         
 class StatsDB(object):

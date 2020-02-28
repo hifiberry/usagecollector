@@ -41,8 +41,8 @@ class TestClientServer(unittest.TestCase):
         
         # this record does not exist
         record = client.get_data("test3")
-        self.assertEqual(record.get("active"),0)
-        self.assertEqual(record.get("changed"),0)
+        self.assertEqual(record.get("active"),None)
+        self.assertEqual(record.get("changed"),None)
         
         # Check keys, it should be test1-test3
         keys = client.keys()

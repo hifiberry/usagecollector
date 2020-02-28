@@ -13,46 +13,48 @@ class DBEntryTest(unittest.TestCase):
 
     def testDBEntryCreate(self):
         entry = DBEntry()
-        self.assertEqual(entry.active, False)
-        self.assertEqual(entry.used, 0)
-        self.assertEqual(entry.changed, 0)
+        self.assertEqual(entry.get("active"), False)
+        self.assertEqual(entry.get("used"), 0)
+        self.assertEqual(entry.get("changed"), 0)
 
         entry = DBEntry({"active": 1, "used":"17", "changed": 3})
         
-        self.assertEqual(entry.active, True)
-        self.assertEqual(entry.used, 17)
-        self.assertEqual(entry.changed, 3)
+        self.assertEqual(entry.get("active"), True)
+        self.assertEqual(entry.get("used"), 17)
+        self.assertEqual(entry.get("changed"), 3)
         
 
     def testDBEntryActivate(self):
         entry = DBEntry()
-        self.assertEqual(entry.active, False)
-        self.assertEqual(entry.changed, 0)
+        self.assertEqual(entry.get("active"), False)
+        self.assertEqual(entry.get("changed"), 0)
         entry.activate()
-        self.assertEqual(entry.active, True)
-        self.assertEqual(entry.changed, 1)
+        self.assertEqual(entry.get("active"), True)
+        self.assertEqual(entry.get("changed"), 1)
         entry.activate(False)
-        self.assertEqual(entry.active, False)
-        self.assertEqual(entry.changed, 2)
+        self.assertEqual(entry.get("active"), False)
+        self.assertEqual(entry.get("changed"), 2)
         entry.activate(False)
-        self.assertEqual(entry.active, False)
-        self.assertEqual(entry.changed, 2)
+        self.assertEqual(entry.get("active"), False)
+        self.assertEqual(entry.get("changed"), 2)
+        self.assertEqual(entry.get("activated"), 1)
+        self.assertEqual(entry.get("deactivated"), 2)
         
     def testDBEntryUse(self):
         entry = DBEntry()
-        self.assertEqual(entry.used, 0)
-        self.assertEqual(entry.changed, 0)
+        self.assertEqual(entry.get("used"), 0)
+        self.assertEqual(entry.get("changed"), 0)
         entry.use(1)
-        self.assertEqual(entry.used, 1)
-        self.assertEqual(entry.changed, 0)
+        self.assertEqual(entry.get("used"), 1)
+        self.assertEqual(entry.get("changed"), 0)
         entry.use(1)
-        self.assertEqual(entry.used, 2)
+        self.assertEqual(entry.get("used"), 2)
         entry.use(10)
-        self.assertEqual(entry.used, 12)
+        self.assertEqual(entry.get("used"), 12)
         entry.use(-1)
-        self.assertEqual(entry.used, 12)
+        self.assertEqual(entry.get("used"), 12)
         entry.use(0.1)
-        self.assertEqual(entry.used, 12.1)
+        self.assertEqual(entry.get("used"), 12.1)
         
 class StatsDBTest(unittest.TestCase):
     
@@ -91,7 +93,7 @@ class StatsDBTest(unittest.TestCase):
         
         db2 = StatsDB()
         self.assertEqual(len(db2), 0)
-        self.assertEqual(db2.get("test3").used, 0)
+        self.assertEqual(db2.get("test3").get("used"), 0)
         
         db2.readFile(filename)
         
