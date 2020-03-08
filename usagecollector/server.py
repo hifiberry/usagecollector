@@ -112,7 +112,8 @@ class StatsWebserver():
 
     def startServer(self):
         self.bottle.run(port=self.port,
-                        host=self.host)
+                        host=self.host,
+                        quiet=True)
 
     def activate_handler(self, key, activate = True):
         record = self.db.get(key, create=True)
