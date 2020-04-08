@@ -72,11 +72,8 @@ class DBEntry(object):
             except:
                 self.deactivated = 1
                 
-                
     def get(self, attribute, default_value=0):
         return self.__dict__.get(attribute, default_value)
-
-        
             
         
 class StatsDB(object):

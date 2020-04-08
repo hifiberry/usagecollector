@@ -19,18 +19,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+import requests
+import logging
 
-class StatSync(object):
+my_uuid=None
 
-    def __init__(self, uuid, secretkey):
-        self.uuid = uuid
-        self.secretkey = secretkey
-        
-        
-    def push_data(self, statsdb):
-        pass
+def host_uuid():
+    global my_uuid
+
+    if my_uuid is not None:
+        return my_uuid
+
+    try:
+        with open('/etc/uuid', 'r') as file:
+            my_uuid = file.readline().strip()
+    except IOError:
+        logging.warning("can't read /etc/uuid, using empty UUID")
+        my_uuid = "unknown"
+
+    return my_uuid
+
+def push_data(statsdb):
+    url = "https://musicdb.hifiberry.com/update-stats"
+    json = statsdb.asJson()
+    try:
+        requests.post(url, data = {"uuid": host_uuid(), "stats": json},  timeout=10)
+    except Exception as e:
+        logging.exception(e)
     
     
-    def pull_data(self):
-        return None
-        

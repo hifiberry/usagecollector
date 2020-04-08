@@ -31,6 +31,7 @@ import signal
 from bottle import Bottle, response
 
 from usagecollector.db import StatsDB
+from usagecollector import cloudsync
 
 stopped = False
 statsServer = None
@@ -109,6 +110,9 @@ class StatsWebserver():
         self.bottle.route('/api/dump',
                           method="GET",
                           callback=self.dump_handler)
+        self.bottle.route('/api/push',
+                          method="POST",
+                          callback=self.push_handler)
 
     def startServer(self):
         self.bottle.run(port=self.port,
@@ -157,6 +161,10 @@ class StatsWebserver():
         response.headers['Content-Type'] = 'application/json'
         json_str = self.db.asJson()
         return json_str
+    
+    def push_handler(self):
+        cloudsync.push_data(self.db)
+        return "ok"
     
     # ##
     # ## end URL handlers
