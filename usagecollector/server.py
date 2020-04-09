@@ -48,8 +48,10 @@ class DataSaver(threading.Thread):
 
     def run(self):
         i=0
+        uptime = statsServer.db.get("uptime", create=True) # Also record time the system is running
         while not(self.stopped) and self.statsServer is not None:
             time.sleep(1)
+            uptime.use(1)
             if i >= self.store_interval:
                 logging.info("storing stats db")
                 self.statsServer.store_data()
