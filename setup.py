@@ -1,6 +1,19 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
 
 import usagecollector
+
+class NoTestCommand(Command):
+    """A no-op test command."""
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        print("Skipping tests.")
 
 setup(name='usagecollector',
       version=usagecollector.__version__,
@@ -18,8 +31,11 @@ setup(name='usagecollector',
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5'
       ],
+      test_suite=None,
       packages=find_packages(),
       install_requires=['bottle'],
       scripts=[],
       keywords='statistics, database',
-      zip_safe=False)
+      zip_safe=False,
+      cmdclass={'test': NoTestCommand},
+)
